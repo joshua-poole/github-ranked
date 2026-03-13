@@ -4,6 +4,7 @@ import { useTRPC } from '#/integrations/trpc/react'
 import { UserMetrics } from './components/UserMetrics'
 import { UserRanking } from './components/UserRanking'
 import { useParams } from '@tanstack/react-router'
+import { UserIcon } from './components/UserIcon'
 
 export function DashboardPage() {
   const { username } = useParams({ from: '/dashboard/$username' })
@@ -15,7 +16,8 @@ export function DashboardPage() {
   if (isLoading) return <div>Loading...</div>
   return (
     <div className="space-y-4 p-4">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <UserIcon username={username} />
+      <h1 className="text-2xl font-bold">{username}</h1>
       <UserMetrics metrics={data?.stats} />
       <UserRanking data={data} />
     </div>

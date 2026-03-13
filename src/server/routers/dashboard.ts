@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '@/integrations/trpc/init'
 import { TRPCError } from '@trpc/server'
+import { getUserIcon } from '../services/dashboard/getUserIcon'
 
 export const dashboardRouter = createTRPCRouter({
   searchUser: publicProcedure
@@ -52,5 +53,12 @@ export const dashboardRouter = createTRPCRouter({
         },
         ml: { rankingPrediction: 0.87 },
       }
+    }),
+
+  getUserIcon: publicProcedure
+    .input(z.object({ username: z.string().min(1) }))
+    .query(async ({ input }) => {
+      const avatarUrl = await getUserIcon(input.username)
+      return avatarUrl
     }),
 })
