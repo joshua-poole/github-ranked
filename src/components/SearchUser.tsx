@@ -11,18 +11,31 @@ import { useQuery } from '@tanstack/react-query'
 export function SearchUser() {
   const trpc = useTRPC()
   const router = useRouter()
-  const [submittedUsername, setSubmittedUsername] = useState<string | null>(null)
+  const [submittedUsername, setSubmittedUsername] = useState<string | null>(
+    null,
+  )
   const [notFound, setNotFound] = useState(false)
 
   const query = useQuery({
-    ...trpc.dashboard.searchUser.queryOptions({ username: submittedUsername ?? '' }),
+    ...trpc.dashboard.searchUser.queryOptions({
+      username: submittedUsername ?? '',
+    }),
     enabled: !!submittedUsername,
     retry: false,
+  })
+  console.log({
+    submittedUsername,
+    status: query.status,
+    data: query.data,
+    error: query.error,
   })
 
   useEffect(() => {
     if (query.isSuccess) {
-      router.navigate({ to: '/dashboard/$username', params: { username: query.data.login } })
+      router.navigate({
+        to: '/dashboard/$username',
+        params: { username: query.data.login },
+      })
     }
     if (query.isError) {
       setNotFound(true)
@@ -60,10 +73,10 @@ export function SearchUser() {
               field.state.meta.isTouched && !field.state.meta.isValid
 
             return (
-              <Field data-invalid={isInvalid} >
+              <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Search</FieldLabel>
                 <Input
-                  className='text-sm h-10'
+                  className="text-sm h-10"
                   id={field.name}
                   name={field.name}
                   value={field.state.value}
@@ -77,7 +90,7 @@ export function SearchUser() {
           }}
         />
       </FieldGroup>
-      <Button type="submit" form="search-user-form" className='text-sm h-10'>
+      <Button type="submit" form="search-user-form" className="text-sm h-10">
         Search
       </Button>
     </form>
