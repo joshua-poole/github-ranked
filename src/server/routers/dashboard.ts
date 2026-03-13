@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '@/integrations/trpc/init'
 import { TRPCError } from '@trpc/server'
 import { getUserIcon } from '../services/dashboard/getUserIcon'
+import { getUserStats } from '../services/dashboard/getUserStats'
 
 export const dashboardRouter = createTRPCRouter({
   searchUser: publicProcedure
@@ -38,21 +39,11 @@ export const dashboardRouter = createTRPCRouter({
       return { login: user.login as string }
     }),
 
-  getDashboardData: publicProcedure
-    .input(z.object({ username: z.string() }))
+  getUserStats: publicProcedure
+    .input(z.object({ username: z.string().min(1) }))
     .query(async ({ input }) => {
-      const { username } = input
-
-      return {
-        stats: { totalRepos: 12, totalStars: 34 },
-        graphs: {
-          repoActivity: [
-            { date: '2026-03-01', commits: 3 },
-            { date: '2026-03-02', commits: 5 },
-          ],
-        },
-        ml: { rankingPrediction: 0.87 },
-      }
+      const stats = await getUserStats(input.username)
+      return stats
     }),
 
   getUserIcon: publicProcedure
