@@ -17,11 +17,11 @@ export default function Header() {
   return (
     <header className="w-full flex flex-row bg-secondary items-center justify-between p-5">
       <NavigationMenu className="gap-5">
-        <h1 className="font-bold">GITRANK.GG</h1>
+        <Link to="/"><h1 className="font-bold text-lg">GITRANK.GG</h1></Link>
         <NavigationMenuList>
           {navItems.map((el) => (
             <NavigationMenuItem>
-              <NavigationMenuLink asChild>
+              <NavigationMenuLink asChild className='text-sm'>
                 <Link to={el.path}>{el.label}</Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
