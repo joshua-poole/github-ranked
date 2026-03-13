@@ -1,15 +1,15 @@
 // DashboardPage.tsx
-import { useQuery } from "@tanstack/react-query"
-import { useTRPC } from "#/integrations/trpc/react"
-import { UserMetrics } from "./components/UserMetrics"
-import { UserRanking } from "./components/UserRanking"
+import { useQuery } from '@tanstack/react-query'
+import { useTRPC } from '#/integrations/trpc/react'
+import { UserMetrics } from './components/UserMetrics'
+import { UserRanking } from './components/UserRanking'
+import { useParams } from '@tanstack/react-router'
 
 export function DashboardPage() {
-  const trpc = useTRPC();
+  const { username } = useParams({ from: '/dashboard/$username' })
+  const trpc = useTRPC()
   const { data, isLoading } = useQuery(
-    trpc.dashboard.getDashboardData.queryOptions({
-      userId: 'example-user-id',
-    })
+    trpc.dashboard.getDashboardData.queryOptions({ username }),
   )
 
   if (isLoading) return <div>Loading...</div>

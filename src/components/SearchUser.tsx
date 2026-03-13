@@ -5,7 +5,7 @@ import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { useTRPC } from '#/integrations/trpc/react'
 import { useRouter } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 
 export function SearchUser() {
@@ -14,18 +14,21 @@ export function SearchUser() {
   const [submittedUsername, setSubmittedUsername] = useState<string | null>(null)
   const [notFound, setNotFound] = useState(false)
 
-    const { isFetching } = useQuery({
+  const query = useQuery({
     ...trpc.dashboard.searchUser.queryOptions({ username: submittedUsername ?? '' }),
     enabled: !!submittedUsername,
     retry: false,
-    onSuccess: ({ login }) => {
-      router.navigate({ to: '/dashboard/$username', params: { username: login } })
-    },
-    onError: () => {
+  })
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      router.navigate({ to: '/dashboard/$username', params: { username: query.data.login } })
+    }
+    if (query.isError) {
       setNotFound(true)
       setSubmittedUsername(null)
-    },
-  })
+    }
+  }, [query.isSuccess, query.isError])
 
   const form = useForm({
     validators: {

@@ -12,8 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RankIndexRouteImport } from './routes/rank/index'
 import { Route as LeaderboardIndexRouteImport } from './routes/leaderboard/index'
-import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
+import { Route as DashboardUsernameRouteImport } from './routes/dashboard/$username'
 import { Route as ApiTrpcSplatRouteImport } from './routes/api.trpc.$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -31,14 +31,14 @@ const LeaderboardIndexRoute = LeaderboardIndexRouteImport.update({
   path: '/leaderboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AboutIndexRoute = AboutIndexRouteImport.update({
   id: '/about/',
   path: '/about/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardUsernameRoute = DashboardUsernameRouteImport.update({
+  id: '/dashboard/$username',
+  path: '/dashboard/$username',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiTrpcSplatRoute = ApiTrpcSplatRouteImport.update({
@@ -49,16 +49,16 @@ const ApiTrpcSplatRoute = ApiTrpcSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard/$username': typeof DashboardUsernameRoute
   '/about/': typeof AboutIndexRoute
-  '/dashboard/': typeof DashboardIndexRoute
   '/leaderboard/': typeof LeaderboardIndexRoute
   '/rank/': typeof RankIndexRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard/$username': typeof DashboardUsernameRoute
   '/about': typeof AboutIndexRoute
-  '/dashboard': typeof DashboardIndexRoute
   '/leaderboard': typeof LeaderboardIndexRoute
   '/rank': typeof RankIndexRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
@@ -66,8 +66,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard/$username': typeof DashboardUsernameRoute
   '/about/': typeof AboutIndexRoute
-  '/dashboard/': typeof DashboardIndexRoute
   '/leaderboard/': typeof LeaderboardIndexRoute
   '/rank/': typeof RankIndexRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
@@ -76,18 +76,24 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/dashboard/$username'
     | '/about/'
-    | '/dashboard/'
     | '/leaderboard/'
     | '/rank/'
     | '/api/trpc/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/dashboard' | '/leaderboard' | '/rank' | '/api/trpc/$'
+  to:
+    | '/'
+    | '/dashboard/$username'
+    | '/about'
+    | '/leaderboard'
+    | '/rank'
+    | '/api/trpc/$'
   id:
     | '__root__'
     | '/'
+    | '/dashboard/$username'
     | '/about/'
-    | '/dashboard/'
     | '/leaderboard/'
     | '/rank/'
     | '/api/trpc/$'
@@ -95,8 +101,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardUsernameRoute: typeof DashboardUsernameRoute
   AboutIndexRoute: typeof AboutIndexRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
   LeaderboardIndexRoute: typeof LeaderboardIndexRoute
   RankIndexRoute: typeof RankIndexRoute
   ApiTrpcSplatRoute: typeof ApiTrpcSplatRoute
@@ -125,18 +131,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard/': {
-      id: '/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/about/': {
       id: '/about/'
       path: '/about'
       fullPath: '/about/'
       preLoaderRoute: typeof AboutIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/$username': {
+      id: '/dashboard/$username'
+      path: '/dashboard/$username'
+      fullPath: '/dashboard/$username'
+      preLoaderRoute: typeof DashboardUsernameRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/trpc/$': {
@@ -151,8 +157,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardUsernameRoute: DashboardUsernameRoute,
   AboutIndexRoute: AboutIndexRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
   LeaderboardIndexRoute: LeaderboardIndexRoute,
   RankIndexRoute: RankIndexRoute,
   ApiTrpcSplatRoute: ApiTrpcSplatRoute,
