@@ -1,14 +1,84 @@
 generator client {
   provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-model Todo {
-  id        Int      @id @default(autoincrement())
-  title     String
-  createdAt DateTime @default(now())
+generator zod {
+  provider = "prisma-zod-generator"
+  output   = "../generated/zod"
+}
+
+enum Rank {
+  UNRANKED
+  PLASTIC
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+  LINUS
+}
+
+model User {
+  id                  BigInt @id @default(autoincrement())
+  username            String @unique
+  rank                Rank
+  elo                 BigInt
+  placementCompleted  Boolean
+  leaderboard         Leaderboard[]
+  badges              UserBadges[]
+  createdAt           DateTime @default(now())
+  lastUpdated         DateTime @updatedAt
+
+  @@index([elo])
+  @@index([rank])
+}
+
+model Leaderboard {
+  userId              BigInt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  position            Int
+  seasonId            BigInt
+  season              Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  @@id([userId, seasonId])
+  @@index([seasonId, position])
+}
+
+model Season {
+  id                  BigInt   @id @default(autoincrement())
+  startDate           DateTime @default(now())
+  endDate             DateTime @default(now())
+  leaderboard         Leaderboard[]       
+}
+
+model Badge {
+  id                  BigInt    @id @default(autoincrement())
+  name                String
+  description         String
+  challengeId         BigInt
+  challenge           Challenge  @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  users               UserBadges[]
+
+  @@index([challengeId])
+}
+
+model UserBadges {
+  userId              BigInt
+  user                User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId             BigInt
+  badge               Badge  @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  @@id([userId, badgeId])
+  @@index([badgeId])
+}
+
+model Challenge {
+  id                  BigInt    @id @default(autoincrement())
+  name                String
+  description         String
+  requirements        String
+  badges              Badge[]
 }
