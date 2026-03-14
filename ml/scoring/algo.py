@@ -82,8 +82,7 @@ class ELO:
             avg_msg_score = 0.5
             avg_stress = 0.5
 
-        level_val = total / weight_sum if weight_sum > 0 else 0
-        level = int(min(5000, max(0, round(level_val))))
+        level = int(min(5000, max(0, round(total))))
 
         breakdown: Breakdown = {
             "stressContribution": round(avg_stress * 100),
