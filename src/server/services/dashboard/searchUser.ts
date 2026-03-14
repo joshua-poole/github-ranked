@@ -25,9 +25,11 @@ export async function searchUser(username: string): Promise<{ login: string }> {
     }
 
     if (!res.ok) {
+      const body = await res.text()
+      console.error(`GitHub API error: ${res.status} ${res.statusText}`, body)
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'GitHub API error',
+        message: `GitHub API error: ${res.status} ${res.statusText}`,
       })
     }
 
