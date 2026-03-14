@@ -86,7 +86,10 @@
       "@prisma/engines",
       "esbuild",
       "lightningcss",
-      "prisma"
+      "msw",
+      "prisma",
+      "prisma-zod-generator",
+      "unrs-resolver"
     ]
   }
 }

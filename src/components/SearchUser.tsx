@@ -73,7 +73,7 @@ export function SearchUser() {
               field.state.meta.isTouched && !field.state.meta.isValid
             return (
               <Field
-                data-invalid={isInvalid || notFound}
+                data-invalid={isInvalid}
                 className="relative mb-2"
               >
                 <FieldLabel htmlFor={field.name}>Search</FieldLabel>

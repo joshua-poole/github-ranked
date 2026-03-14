@@ -41,7 +41,7 @@ export function UserStats({ username }: UserStatsProps) {
         <StatCard label="Top Language" value={data.topLanguage ?? 'N/A'} />
       </div>
 
-      {(data.bio || data.location || data.company || data.website) && (
+      {(data.location || data.company || data.website) && (
         <Card className="border-[var(--line)]]">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">About</CardTitle>
@@ -54,7 +54,6 @@ export function UserStats({ username }: UserStatsProps) {
                   {new Date(data.accountCreatedAt).getFullYear()}
                 </p>
               )}
-              {data.bio && <p>💬 {data.bio}</p>}
               {data.location && <p>📍 {data.location}</p>}
               {data.company && <p>🏢 {data.company}</p>}
               {data.website && (
