@@ -36,21 +36,9 @@ export function UserStats({ username }: UserStatsProps) {
     <div className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <StatCard label="Public Repos" value={data.publicRepos} />
-        <StatCard label="Followers" value={data.followers} />
-        <StatCard label="Following" value={data.following} />
         <StatCard label="Total Stars" value={data.totalStars} />
         <StatCard label="Total Forks" value={data.totalForks} />
         <StatCard label="Top Language" value={data.topLanguage ?? 'N/A'} />
-        <StatCard
-          label="Member Since"
-          value={new Date(data.accountCreatedAt).getFullYear()}
-        />
-        {data.mostStarredRepo && (
-          <StatCard
-            label="Most Starred"
-            value={`${data.mostStarredRepo.name} (${data.mostStarredRepo.stars}⭐)`}
-          />
-        )}
       </div>
 
       {(data.bio || data.location || data.company || data.website) && (
@@ -61,6 +49,11 @@ export function UserStats({ username }: UserStatsProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-1 text-sm text-[var(--sea-ink)]">
+            {data.accountCreatedAt && (
+              <p>
+                Member Since {new Date(data.accountCreatedAt).getFullYear()}
+              </p>
+            )}
             {data.bio && <p>{data.bio}</p>}
             {data.location && <p>📍 {data.location}</p>}
             {data.company && <p>🏢 {data.company}</p>}
