@@ -10,8 +10,8 @@ import torch
 from sentence_transformers import SentenceTransformer
 from tqdm import tqdm
 
-DATA_DIR = Path(__file__).resolve().parents[1] / "data"
-ARTEFACTS_DIR = Path(__file__).resolve().parents[1] / "artefacts"
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+ARTEFACTS_DIR = Path(__file__).resolve().parents[2] / "artefacts"
 
 DATASET_PATH = DATA_DIR / "dhruvildave_github-commit-messages-dataset.csv"
 

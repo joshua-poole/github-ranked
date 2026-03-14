@@ -3,10 +3,10 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 
 import joblib
+import numpy as np
 import requests
 from dotenv import load_dotenv
 from rich import print as rprint
-import numpy as np
 
 from .config import ARTEFACTS_DIR
 from .run import classify
@@ -60,6 +60,30 @@ def get_user_commits_global(username: str, days: int = 21) -> list[tuple[str, st
     return commit_data
 
 
+def get_repo_commits(repo_path: str, days: int = 21) -> list[tuple[str, str, str]]:
+    date_since = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    url = f"https://api.github.com/repos/{repo_path}/commits"
+    params = {"since": date_since, "per_page": 100}
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json",
+    }
+
+    commit_data = []
+    response = requests.get(url, headers=headers, params=params)
+
+    if response.status_code == 200:
+        commits = response.json()
+        for c in commits:
+            msg = c["commit"]["message"].split("\n")[0]
+            date = c["commit"]["author"]["date"]
+            author = c["commit"]["author"]["name"]
+            commit_data.append((msg, date, author))
+    else:
+        rprint(f"[red]Error fetching {repo_path}: {response.status_code}[/red]")
+
+    return commit_data
 
 
 def compute_stress_score(results: list) -> float:
@@ -80,37 +104,41 @@ if __name__ == "__main__":
     clf = artifact["model"]
     scaler = artifact["scaler"]
 
-    users = ["joshua-poole", "imareeq", "NathanTheDev"]
-    user_results = defaultdict(list)
+    repos = ["NathanTheDev/Hashiwokakero-Solver"]
+    repo_results = defaultdict(list)
 
-    rprint(f"[bold blue]Fetching commits for {len(users)} users...[/bold blue]")
+    rprint(
+        f"[bold blue]Analyzing stress levels in {len(repos)} repositorie(s)...[/bold blue]"
+    )
 
-    for user in users:
+    for repo in repos:
         try:
-            raw_data = get_user_commits_global(user, days=21)
+            raw_data = get_repo_commits(repo, days=10_000)
             raw_data.sort(key=lambda x: x[1])
 
-            for msg, date in raw_data:
+            for msg, date, author in raw_data:
                 result = classify(msg, clf, scaler)
-                result.author = user
+                result.repo = repo
+                result.author = author
                 result.timestamp = date
-                user_results[user].append(result)
+                repo_results[repo].append(result)
 
         except Exception as e:
-            rprint(f"[red]Failed to fetch data for {user}: {e}[/red]")
+            rprint(f"[red]Failed to fetch data for {repo}: {e}[/red]")
 
-    rprint("\n[bold underline]Stress Report Grouped by User[/bold underline]\n")
+    rprint("\n[bold underline]Project Sentiment Report[/bold underline]\n")
 
-    for user, results in user_results.items():
-        rprint(f"\n[bold reverse] User: {user} [/bold reverse]")
+    for repo, results in repo_results.items():
+        rprint(f"\n[bold reverse] Repository: {repo} [/bold reverse]")
 
         for result in results:
-            rprint(result.render())
+            rprint(f"({result.author}):", result.render())
 
         overall = compute_stress_score(results)
         color = "red" if overall > 0.7 else "yellow" if overall > 0.3 else "green"
         bar = "█" * int(overall * 20)
         bar += "·" * (20 - len(bar))
+
         rprint(
-            f"\n[bold]Recency-Weighted Stress Score:[/bold] [{color}]{overall:.4f} {bar}[/{color}]"
+            f"\n[bold]Aggregate Repo Stress Score:[/bold] [{color}]{overall:.4f} {bar}[/{color}]"
         )

@@ -19,7 +19,8 @@ class CommitClassification:
     score: float
     label: str
     is_stressed: bool
-    author: str = "unknown"
+    author: str = ""
+    repo: str = ""
     timestamp: str = ""
 
     def render(self) -> Text:
