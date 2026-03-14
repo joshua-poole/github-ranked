@@ -1,9 +1,10 @@
 import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '@/integrations/trpc/init'
 import { TRPCError } from '@trpc/server'
-import { getUserIcon } from '../../../server/services/dashboard/getUserIcon'
-import { getUserStats } from '../../../server/services/dashboard/getUserStats'
-import { getContributions } from '../../../server/services/dashboard/getContributions'
+import { getUserIcon } from '#/server/services/dashboard/getUserIcon'
+import { getUserStats } from '#/server/services/dashboard/getUserStats'
+import { getContributions } from '#/server/services/dashboard/getContributions'
+import { getUserRank } from '#/server/services/dashboard/getUserRank'
 
 export const dashboardRouter = createTRPCRouter({
   searchUser: publicProcedure
@@ -59,5 +60,11 @@ export const dashboardRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const contributions = await getContributions(input.username)
       return contributions
+    }),
+
+  getUserRank: publicProcedure
+    .input(z.object({ username: z.string().min(1) }))
+    .query(async ({ input }) => {
+      return getUserRank(input.username)
     }),
 })

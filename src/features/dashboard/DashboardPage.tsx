@@ -3,6 +3,7 @@ import { UserIcon } from './components/UserIcon'
 import { UserStats } from './components/UserStats'
 import { ContributionGraph } from './components/ContributionGraph'
 import { Separator } from '#/components/ui/separator'
+import { UserRank } from './components/UserRank'
 
 export function DashboardPage() {
   const { username } = useParams({ from: '/dashboard/$username' })
@@ -15,6 +16,9 @@ export function DashboardPage() {
             {username}
           </h1>
           <p className="text-sm text-[var(--sea-ink-soft)]">GitHub Profile</p>
+        </div>
+        <div className="ml-auto">
+          <UserRank username={username} />
         </div>
       </div>
       <Separator />
