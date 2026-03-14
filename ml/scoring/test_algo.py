@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 
 from ml.scoring.algo import ELO
-from ml.scoring.types import CommitData, MLSignals
+from ml.scoring.types import CommitData
 
 now = datetime.now()
 
@@ -13,6 +13,7 @@ commit1: CommitData = {
     "additions": 150,
     "deletions": 30,
     "filesChanged": 5,
+    "stressLevel": 0.3,
 }
 
 commit2: CommitData = {
@@ -22,6 +23,7 @@ commit2: CommitData = {
     "additions": 5,
     "deletions": 2,
     "filesChanged": 1,
+    "stressLevel": 0.0,
 }
 
 commit3: CommitData = {
@@ -31,17 +33,13 @@ commit3: CommitData = {
     "additions": 200,
     "deletions": 0,
     "filesChanged": 3,
+    "stressLevel": 1,
 }
 
 commits: list[CommitData] = [commit1, commit2, commit3]
 
-signals: MLSignals = {"stressLevel": 0.3}
 
 elo = ELO()
-result = elo.calculate(commits, signals)
+result = elo.calculate(commits)
 
 print(f"Elo : {result['eloDelta']}")
-print("\nBreakdown:")
-for key, value in result["breakdown"].items():
-    print(f"  {key}: {value}")
-print(f"\nRecommendation: {result['recommendation']}")

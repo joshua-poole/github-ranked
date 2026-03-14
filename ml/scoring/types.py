@@ -17,12 +17,7 @@ class CommitData(TypedDict):
     additions: int  # Lines added
     deletions: int  # Lines deleted
     filesChanged: int  # Number of files touched
-
-
-class MLSignals(TypedDict):
-    stressLevel: float  # 0 chill, 1 stressed
-    msgQuality: NotRequired[Optional[float]]
-    sloppiness: NotRequired[Optional[float]]
+    stressLevel: float  # 0 chill, 1 stressed (from ML)
 
 
 class Breakdown(TypedDict):
@@ -32,7 +27,6 @@ class Breakdown(TypedDict):
     messageQualityDeduction: int
 
 
-class SpikeResult(TypedDict):
+class Result(TypedDict):
     eloDelta: int
     breakdown: Breakdown
-    recommendation: str
