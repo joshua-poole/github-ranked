@@ -4,7 +4,6 @@ import re
 from datetime import datetime, timedelta
 from typing import List
 
-from .tiers import get_tier_from_level
 from .types import Breakdown, CommitData, MLSignals, SpikeResult
 
 
@@ -50,11 +49,8 @@ class ELO:
             "messageQualityDeduction": round(self._avg_msg_quality(recent) * 100),
         }
 
-        tier = get_tier_from_level(level)
-
         result: SpikeResult = {
-            "glucoseLevel": level,
-            "tier": tier,
+            "eloDelta": level,
             "breakdown": breakdown,
             "recommendation": self._get_recommendation(level, signals),
         }

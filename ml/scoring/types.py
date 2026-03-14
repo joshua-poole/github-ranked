@@ -33,7 +33,6 @@ class Breakdown(TypedDict):
 
 
 class SpikeResult(TypedDict):
-    glucoseLevel: int
-    tier: Tier
+    eloDelta: int
     breakdown: Breakdown
     recommendation: str
