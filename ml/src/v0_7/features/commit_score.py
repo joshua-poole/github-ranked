@@ -12,7 +12,10 @@ from v0_7.unstable.github.commits import get_user_commits
 def compute_stress_score(
     df: pd.DataFrame, pipeline: SentimentRegressionPipeline
 ) -> float:
-    scores = np.array(pipeline.score(df["message"].tolist()))
+    if df.empty:
+        return 0
+
+    scores = np.atleast_1d(np.array(pipeline.score(df["message"].tolist())))
     weights = np.exp(np.linspace(0, 1, len(scores)))
     weights /= weights.sum()
     return float(np.dot(weights, scores))
@@ -20,7 +23,7 @@ def compute_stress_score(
 
 if __name__ == "__main__":
     pipeline = SentimentRegressionPipeline()
-    pipeline.load_model(model_path=ARTEFACTS_DIR / "20260314_235008.pkl")
+    pipeline.load_model(model_path=ARTEFACTS_DIR / "20260315_024827_model.pkl")
 
     users = [
         "joshua-poole",

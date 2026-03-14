@@ -119,7 +119,7 @@ class SentimentRegressionPipeline:
             raise RuntimeError("Model not initialised. Call train() first")
 
         if export_path is None:
-            export_path = ARTEFACTS_DIR / f"{timestamp()}.pkl"
+            export_path = ARTEFACTS_DIR / f"{timestamp()}_model.pkl"
 
         joblib.dump({"model": self.clf}, export_path)
         rprint(f"[bold green]Saved model to[/bold green] '{export_path}'")
@@ -136,7 +136,8 @@ class SentimentRegressionPipeline:
 
 
 if __name__ == "__main__":
-    # pipeline = SentimentRegressionPipeline()
+    pipeline = SentimentRegressionPipeline()
+
     # pipeline.load_dataset(
     #     embs_path=ARTEFACTS_DIR / "20260314_221349_embeddings.pt",
     #     split_ratio=0.7,
@@ -147,6 +148,5 @@ if __name__ == "__main__":
     # pipeline.eval()
     # pipeline.save()
 
-    pipeline = SentimentRegressionPipeline()
-    pipeline.load_model(model_path=ARTEFACTS_DIR / "20260314_235008.pkl")
+    pipeline.load_model(model_path=ARTEFACTS_DIR / "20260315_024827_model.pkl")
     rprint(pipeline.score("Test"))
