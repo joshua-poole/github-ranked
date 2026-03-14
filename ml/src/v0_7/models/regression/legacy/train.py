@@ -12,8 +12,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score
 from sklearn.preprocessing import StandardScaler
 
-from ..core.data import (
-    ARTEFACTS_DIR,
+from v0_7.core import ARTEFACTS_DIR
+
+from .data import (
     MODEL,
     get_signals,
     get_split_embeddings,

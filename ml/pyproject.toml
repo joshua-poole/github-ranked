@@ -17,6 +17,9 @@ dependencies = [
   "python-dotenv==1.2.2",
   "requests-toolbelt==1.0.0",
   "gql==4.0.0",
+
+  # Refactoring
+  "polars==1.39.0", # Replace pandas
 ]
 
 [[tool.uv.index]]

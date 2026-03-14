@@ -10,11 +10,9 @@ import torch
 from sentence_transformers import SentenceTransformer
 from tqdm import tqdm
 
-DATA_DIR = Path(__file__).resolve().parents[2] / "data"
-ARTEFACTS_DIR = Path(__file__).resolve().parents[2] / "artefacts"
-DATASET_PATH = DATA_DIR / "dhruvildave_github-commit-messages-dataset.csv"
+from v0_7.core import DATA_DIR, DEVICE
 
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+DATASET_PATH = DATA_DIR / "dhruvildave_github-commit-messages-dataset.csv"
 MODEL = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device=DEVICE)
 
 SPLIT_RATIO = 0.7

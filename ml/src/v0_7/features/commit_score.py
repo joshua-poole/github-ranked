@@ -13,8 +13,8 @@ from rich import print as rprint
 from sklearn.discriminant_analysis import StandardScaler
 from sklearn.linear_model import LogisticRegression
 
-from v0_7.core.data import ARTEFACTS_DIR
-from v0_7.models.regression import score
+from v0_7.core import ARTEFACTS_DIR
+from v0_7.models.regression.legacy.train import score
 
 load_dotenv()
 
@@ -190,20 +190,24 @@ if __name__ == "__main__":
     clf, scaler = artifact["model"], artifact["scaler"]
 
     users = [
-        # "joshua-poole",
-        # "imareeq",
-        # "kmyria",
-        # "jami303",
-        # "NathanTheDev",
+        "joshua-poole",
+        "imareeq",
+        "kmyria",
+        "jami303",
+        "NathanTheDev",
         "hello-andrew-yan",
     ]
 
     since = datetime.now(UTC) - timedelta(days=100)
     until = datetime.now(UTC)
-
+    days_count = (until - since).days
+    rprint(
+        f"\n[bold blue]Range:[/bold blue] [dim]{since.strftime('%Y-%m-%d')} "
+        f"to {until.strftime('%Y-%m-%d')} ({days_count} days)[/dim]\n"
+    )
     for user in users:
         result = get_user_period_commit_score(
-            user, clf, scaler, since, until, verbose=True
+            user, clf, scaler, since, until, verbose=False
         )
         c = _commit_color(result)
-        rprint(f"\n[bold]'{user}' Overall Commit Score:[/bold] [{c}]{result:.4f}[/{c}]")
+        rprint(f"[bold]'{user}' Overall Commit Score:[/bold] [{c}]{result:.4f}[/{c}]")
