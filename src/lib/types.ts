@@ -1,3 +1,5 @@
+// types.ts
+
 import type { Tier } from './tiers'
 
 export interface CommitData {

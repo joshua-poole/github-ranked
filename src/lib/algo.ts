@@ -1,7 +1,7 @@
 import type { CommitData, MLSignals, SpikeResult } from './types'
 import { getTierFromLevel } from './tiers'
 
-export class MMR {
+export class ELO {
   private readonly DECAY_PER_DAY = 0.99
   private readonly MAX_AGE_DAYS = 90
   private readonly TZ_OFFSET_MIN = 0
