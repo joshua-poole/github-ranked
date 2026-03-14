@@ -9,11 +9,11 @@ now = datetime.now()
 commit1: CommitData = {
     "hash": "abc123",
     "timestamp": now - timedelta(days=1),
-    "message": "feat: add new feature with proper description and everything",
-    "additions": 150,
+    "message": "feat: add user authentication with tests",
+    "additions": 250,
     "deletions": 30,
-    "filesChanged": 5,
-    "stressLevel": 0.3,
+    "filesChanged": 9,
+    "stressLevel": 0.1,  # ML says: chill
 }
 
 commit2: CommitData = {

@@ -1,6 +1,5 @@
 # algo.py
 import math
-import re
 from datetime import datetime, timedelta
 from typing import List
 
@@ -17,7 +16,7 @@ class ELO:
             "loc": 0.35,  # Lines of change (biggest impact)
             "time": 0.15,  # Time of day (business hours)
             "day": 0.10,  # Weekday vs weekend
-            "message": 0.30,  # Commit message quality (ML-powered!)
+            "message": 0.30,  # Commit message quality (ML-powered)
             "consistency": 0.10,  # Consistent pacing
         }
 
@@ -103,7 +102,6 @@ class ELO:
     def _loc_score(self, c: CommitData) -> float:
         """Score based on lines changed (0-1 scale)"""
         changes = c["additions"] + c["deletions"]
-        # Log scale: 0 changes = 0, 10k+ changes = 1
         return min(1.0, math.log10(changes + 1) / 4)
 
     def _time_score(self, c: CommitData) -> float:
@@ -131,7 +129,7 @@ class ELO:
             diff_h = (
                 commits[i]["timestamp"] - commits[i - 1]["timestamp"]
             ).total_seconds() / 3600
-            hours.append(max(0.0, min(48.0, diff_h)))  # Cap at 48h
+            hours.append(max(0.0, min(48.0, diff_h)))
 
         avg = sum(hours) / len(hours)
         variance = sum((h - avg) ** 2 for h in hours) / len(hours)

@@ -1,13 +1,6 @@
 # types.py
 from datetime import datetime
-from typing import NotRequired, Optional, TypedDict
-
-
-class Tier(TypedDict):
-    rank: str
-    minElo: int
-    maxElo: int
-    description: str
+from typing import TypedDict
 
 
 class CommitData(TypedDict):
@@ -16,7 +9,6 @@ class CommitData(TypedDict):
     message: str  # Commit message
     additions: int  # Lines added
     deletions: int  # Lines deleted
-    filesChanged: int  # Number of files touched
     stressLevel: float  # 0 chill, 1 stressed (from ML)
 
 
