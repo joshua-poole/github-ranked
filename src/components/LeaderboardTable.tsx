@@ -1,6 +1,6 @@
 import type { LeaderboardColumn } from '#/schemas/leaderboard'
+import type { ColumnDef } from '@tanstack/react-table'
 import {
-  type ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -26,11 +26,25 @@ interface DataTableProps<TData, TValue> {
 const columns: ColumnDef<LeaderboardColumn>[] = [
   {
     accessorKey: 'position',
-    header: 'Position',
+    header: '#',
+    cell: ({ getValue }) => (
+      <div className="text-muted-foreground">{String(getValue())}</div>
+    ),
   },
   {
     accessorKey: 'username',
     header: 'Name',
+    cell: ({ row }) => (
+      <div className="flex items-center gap-2">
+        <img
+          // src={`https://github.com/${row.original.username}.png`}
+          src={'https://github.com/imareeq.png'}
+          alt={row.original.username}
+          className="h-7.5 aspect-square rounded-full"
+        />
+        <span className="font-medium">{row.original.username}</span>
+      </div>
+    ),
   },
   {
     accessorKey: 'elo',
@@ -46,6 +60,13 @@ const columns: ColumnDef<LeaderboardColumn>[] = [
       <div className="text-right">{String(getValue())}</div>
     ),
   },
+  {
+    accessorKey: 'prs',
+    header: 'PRs',
+    cell: ({ getValue }) => (
+      <div className="text-right">{String(getValue())}</div>
+    ),
+  },
 ]
 
 // TODO: Fetch from api
@@ -55,36 +76,42 @@ const data: LeaderboardColumn[] = [
     position: 1,
     elo: 2400n,
     commits: 54,
+    prs: 9,
   },
   {
     username: 'nathanielpookie',
     position: 2,
     elo: 2300n,
     commits: 50,
+    prs: 5,
   },
   {
     username: 'friedchiggen',
     position: 3,
     elo: 2200n,
     commits: 47,
+    prs: 10,
   },
   {
     username: 'andynextcoin',
     position: 4,
     elo: 2100n,
     commits: 45,
+    prs: 4,
   },
   {
     username: 'aaroncpp',
     position: 5,
     elo: 2000n,
     commits: 40,
+    prs: 2,
   },
   {
     username: 'goatreeq',
     position: 6,
     elo: 1800n,
     commits: 39,
+    prs: 11,
   },
 ]
 
@@ -106,11 +133,13 @@ export function LeaderboardTable() {
                   <TableHead
                     key={header.id}
                     className={cn(
-                      header.id === 'elo'
-                        ? 'text-center'
-                        : header.id === 'commits'
-                          ? 'text-right'
-                          : '',
+                      header.id === 'position'
+                        ? 'w-12'
+                        : header.id === 'elo'
+                          ? 'text-center'
+                          : header.id === 'commits' || header.id === 'prs'
+                            ? 'text-right'
+                            : '',
                       'font-semibold text-xs text-muted-foreground',
                     )}
                   >
@@ -126,7 +155,7 @@ export function LeaderboardTable() {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   <Link
@@ -135,7 +164,13 @@ export function LeaderboardTable() {
                     className="contents text-foreground!"
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        key={cell.id}
+                        className={cn(
+                          cell.column.id === 'position' && 'w-12',
+                          cell.column.id === 'elo' && 'text-primary',
+                        )}
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),
