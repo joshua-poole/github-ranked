@@ -1,6 +1,7 @@
 import json
 import random
 from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -10,10 +11,14 @@ from sentence_transformers import SentenceTransformer
 from tqdm import tqdm
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+ARTEFACTS_DIR = Path(__file__).resolve().parents[1] / "artefacts"
+
 DATASET_PATH = DATA_DIR / "dhruvildave_github-commit-messages-dataset.csv"
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 MODEL = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device=DEVICE)
+
+SPLIT_RATIO = 0.7
 
 
 def load_embeddings(
@@ -23,7 +28,7 @@ def load_embeddings(
     batch_size: int = 1024,
 ) -> torch.Tensor:
     if export_path is None:
-        export_path = DATA_DIR / f"{datetime.now().strftime('%Y%m%d_%H%M%S')}.pt"
+        export_path = ARTEFACTS_DIR / f"{datetime.now().strftime('%Y%m%d_%H%M%S')}.pt"
 
     if export_path.exists():
         print("Loading cached embeddings")
@@ -65,7 +70,7 @@ def load_messages(
     export_path: Path | None = None,
 ) -> np.ndarray:
     if export_path is None:
-        export_path = DATA_DIR / f"{datetime.now().strftime('%Y%m%d_%H%M%S')}.npy"
+        export_path = ARTEFACTS_DIR / f"{datetime.now().strftime('%Y%m%d_%H%M%S')}.npy"
 
     if export_path.exists():
         print("Loading cached messages")
@@ -82,16 +87,51 @@ def load_messages(
     return msgs
 
 
-SPIT_RATIO = 0.7
+@lru_cache(maxsize=1)
+def get_signals() -> dict:
+    random.seed(42)
+    signals = json.loads((DATA_DIR / "signals.json").read_text())
+    positive_all = [msg for key in signals["positive_sources"] for msg in signals[key]]
+    negative_all = [msg for key in signals["negative_sources"] for msg in signals[key]]
+    random.shuffle(positive_all)
+    random.shuffle(negative_all)
+    pos_split = int(len(positive_all) * SPLIT_RATIO)
+    neg_split = int(len(negative_all) * SPLIT_RATIO)
+    return {
+        "positive_train": positive_all[:pos_split],
+        "positive_test": positive_all[pos_split:],
+        "negative_train": negative_all[:neg_split],
+        "negative_test": negative_all[neg_split:],
+    }
 
-random.seed(42)
-signals = json.loads((DATA_DIR / "signals.json").read_text())
-positive_all = [
-    msg for key in signals["positive_train_sources"] for msg in signals[key]
-]
-random.shuffle(positive_all)
 
-split = int(len(positive_all) * SPIT_RATIO)
-POSITIVE_TRAIN_SIGNALS = positive_all[:split]
-POSITIVE_TEST_SIGNALS = positive_all[split:]
-NEGATIVE_TEST_SIGNALS = signals["negative_test_examples"]
+@lru_cache(maxsize=1)
+def get_train_queries() -> tuple[np.ndarray, np.ndarray]:
+    signals = get_signals()
+    with torch.no_grad():
+        pos = MODEL.encode(
+            signals["positive_train"],
+            normalize_embeddings=True,
+            convert_to_tensor=False,
+            show_progress_bar=True,
+        ).astype(np.float32)
+        neg = MODEL.encode(
+            signals["negative_train"],
+            normalize_embeddings=True,
+            convert_to_tensor=False,
+            show_progress_bar=True,
+        ).astype(np.float32)
+    return pos, neg
+
+
+@lru_cache(maxsize=1)
+def get_test_embeddings() -> tuple[np.ndarray, np.ndarray]:
+    signals = get_signals()
+    with torch.no_grad():
+        pos = MODEL.encode(
+            signals["positive_test"], normalize_embeddings=True, convert_to_tensor=False
+        )
+        neg = MODEL.encode(
+            signals["negative_test"], normalize_embeddings=True, convert_to_tensor=False
+        )
+    return pos, neg
