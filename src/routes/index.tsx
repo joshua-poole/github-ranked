@@ -8,11 +8,11 @@ export const Route = createFileRoute('/')({ component: App })
 
 function App() {
   return (
-    <main className="flex flex-col page-wrap px-4 pb-8 pt-14 gap-10 justify-center items-center">
+    <main className="w-full flex flex-col page-wrap px-4 pb-8 pt-14 gap-10 justify-center items-center">
       <div className="flex flex-col items-center justify-center">
-        <h1 className="text-4xl font-bold">GitRank.GG: Ranked Github Stats.</h1>
+        <h1 className="text-4xl font-bold">GitRank.XYZ: Ranked Github Stats.</h1>
         <p>
-          Detailed commit statistics and global GitRank.GG rankings for the
+          Detailed commit statistics and global GitRank.XYZ rankings for the
           modern developer.
         </p>
       </div>

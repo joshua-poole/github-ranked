@@ -1,9 +1,9 @@
 import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '@/integrations/trpc/init'
 import { TRPCError } from '@trpc/server'
-import { getUserIcon } from '../services/dashboard/getUserIcon'
-import { getUserStats } from '../services/dashboard/getUserStats'
-import { getContributions } from '../services/dashboard/getContributions'
+import { getUserIcon } from '../../../server/services/dashboard/getUserIcon'
+import { getUserStats } from '../../../server/services/dashboard/getUserStats'
+import { getContributions } from '../../../server/services/dashboard/getContributions'
 
 export const dashboardRouter = createTRPCRouter({
   searchUser: publicProcedure
