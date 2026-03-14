@@ -41,7 +41,7 @@ export function ContributionGraph({ username }: ContributionGraphProps) {
         <ChartContainer config={chartConfig} className="h-40 w-full">
           <AreaChart
             data={data}
-            margin={{ top: 4, right: 0, left: 0, bottom: 0 }}
+            margin={{ top: 4, right: 0, left: 17, bottom: 0 }}
           >
             <CartesianGrid vertical={false} stroke="var(--line)" />
             <XAxis

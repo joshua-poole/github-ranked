@@ -48,25 +48,28 @@ export function UserStats({ username }: UserStatsProps) {
               About
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-1 text-sm text-[var(--sea-ink)]">
-            {data.accountCreatedAt && (
-              <p>
-                Member Since {new Date(data.accountCreatedAt).getFullYear()}
-              </p>
-            )}
-            {data.bio && <p>{data.bio}</p>}
-            {data.location && <p>📍 {data.location}</p>}
-            {data.company && <p>🏢 {data.company}</p>}
-            {data.website && (
-              <a
-                href={data.website}
-                target="_blank"
-                rel="noreferrer"
-                className="text-[var(--lagoon-deep)] hover:underline"
-              >
-                🔗 {data.website}
-              </a>
-            )}
+          <CardContent>
+            <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-[var(--sea-ink)]">
+              {data.accountCreatedAt && (
+                <p>
+                  🗓️ Member Since{' '}
+                  {new Date(data.accountCreatedAt).getFullYear()}
+                </p>
+              )}
+              {data.bio && <p>💬 {data.bio}</p>}
+              {data.location && <p>📍 {data.location}</p>}
+              {data.company && <p>🏢 {data.company}</p>}
+              {data.website && (
+                <a
+                  href={data.website}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[var(--lagoon-deep)] hover:underline"
+                >
+                  🔗 {data.website}
+                </a>
+              )}
+            </div>
           </CardContent>
         </Card>
       )}
