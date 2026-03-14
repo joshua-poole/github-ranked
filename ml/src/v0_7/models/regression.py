@@ -6,13 +6,15 @@ from datetime import datetime
 import faiss
 import joblib
 import numpy as np
+import torch
 from rich import print as rprint
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score
 from sklearn.preprocessing import StandardScaler
 
-from .data import (
+from ..core.data import (
     ARTEFACTS_DIR,
+    MODEL,
     get_signals,
     get_split_embeddings,
     load_embeddings,
@@ -24,10 +26,7 @@ K_NEGATIVE = 10_000
 
 
 def retrieve_neighbours(
-    index: faiss.IndexFlatIP,
-    queries: np.ndarray,
-    dataset: np.ndarray,
-    k: int,
+    index: faiss.IndexFlatIP, queries: np.ndarray, dataset: np.ndarray, k: int
 ) -> np.ndarray:
     _, indices = index.search(queries, k)
     return dataset[np.unique(indices.flatten())]
@@ -41,15 +40,23 @@ def evaluate(
 ) -> tuple[int, int, float]:
     pos_preds = clf.predict(scaler.transform(pos_test))
     neg_preds = clf.predict(scaler.transform(neg_test))
-
     y_true = [0] * len(pos_preds) + [1] * len(neg_preds)
     y_pred = list(pos_preds) + list(neg_preds)
-
     return (
         sum(p == 1 for p in neg_preds),
         sum(p == 0 for p in pos_preds),
         float(f1_score(y_true, y_pred, average="macro")),
     )
+
+
+def score(
+    message: str | list[str], clf: LogisticRegression, scaler: StandardScaler
+) -> float:
+    if isinstance(message, str):
+        message = [message]
+    with torch.no_grad():
+        emb = MODEL.encode(message, normalize_embeddings=True, convert_to_tensor=False)
+    return float(clf.predict_proba(scaler.transform(emb))[0, 1])
 
 
 if __name__ == "__main__":
@@ -72,8 +79,8 @@ if __name__ == "__main__":
     index.add(dataset_embs)
 
     print(
-        f"Retrieving top {K_POSITIVE:,} positive / "
-        f"top {K_NEGATIVE:,} negative neighbours"
+        f"Retrieving top {K_POSITIVE:,} positive "
+        f"/ top {K_NEGATIVE:,} negative neighbours"
     )
     pos_train_embs = retrieve_neighbours(
         index, splits.pos_train, dataset_embs, K_POSITIVE
@@ -91,16 +98,12 @@ if __name__ == "__main__":
     # Normalize per-dimension variance so no single
     # embedding dimension dominates the decision boundary
     scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-
-    print("Fitting logistic regression")
     clf = LogisticRegression(max_iter=1000)
-    clf.fit(X_scaled, y)
+    clf.fit(scaler.fit_transform(X), y)
 
     neg_correct, pos_correct, macro_f1 = evaluate(
         clf, scaler, splits.pos_test, splits.neg_test
     )
-
     rprint(
         f"Negative correctly flagged: "
         f"[bold red]{neg_correct}[/bold red] / {len(signals['negative_test'])}"
@@ -112,8 +115,11 @@ if __name__ == "__main__":
     rprint(f"Macro F1: [bold magenta]{macro_f1:.3f}[/bold magenta]")
 
     rprint("\nFailing positive test signals:")
-    pos_preds = clf.predict(scaler.transform(splits.pos_test))
-    for sig, pred in zip(signals["positive_test"], pos_preds, strict=True):
+    for sig, pred in zip(
+        signals["positive_test"],
+        clf.predict(scaler.transform(splits.pos_test)),
+        strict=True,
+    ):
         if pred == 1:
             rprint(f"  [red]FAIL[/red] {sig}")
 
