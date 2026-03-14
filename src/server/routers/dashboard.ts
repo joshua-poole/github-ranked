@@ -3,6 +3,7 @@ import { createTRPCRouter, publicProcedure } from '@/integrations/trpc/init'
 import { TRPCError } from '@trpc/server'
 import { getUserIcon } from '../services/dashboard/getUserIcon'
 import { getUserStats } from '../services/dashboard/getUserStats'
+import { getContributions } from '../services/dashboard/getContributions'
 
 export const dashboardRouter = createTRPCRouter({
   searchUser: publicProcedure
@@ -51,5 +52,12 @@ export const dashboardRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const avatarUrl = await getUserIcon(input.username)
       return avatarUrl
+    }),
+
+  getContributions: publicProcedure
+    .input(z.object({ username: z.string().min(1) }))
+    .query(async ({ input }) => {
+      const contributions = await getContributions(input.username)
+      return contributions
     }),
 })
