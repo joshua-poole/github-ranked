@@ -35,7 +35,7 @@ export default function Footer() {
             'radial-gradient(circle 20vw at var(--x, -100vw) var(--y, -100vw), black 0%, rgba(0,0,0,0.25) 100%)',
         }}
       >
-        GITRANK.GG
+        GITRANK.XYZ
       </div>
       <div className="flex flex-col w-full gap-0 p-10 items-center justify-center">
         <p className="p-5 pb-2.5 text-sm m-0">
