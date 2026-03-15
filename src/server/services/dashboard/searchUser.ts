@@ -122,6 +122,14 @@ export async function searchUser(username: string): Promise<{ login: string }> {
     fetchTotalPRs(username),
   ])
 
+  const totalStars = repos.reduce(
+    (sum: number, r: any) => sum + r.stargazers_count,
+    0,
+  )
+  const totalForks = repos.reduce(
+    (sum: number, r: any) => sum + r.forks_count,
+    0,
+  )
   const languageCounts = repos.reduce((acc: Record<string, number>, r: any) => {
     if (r.language) acc[r.language] = (acc[r.language] ?? 0) + 1
     return acc
@@ -137,6 +145,8 @@ export async function searchUser(username: string): Promise<{ login: string }> {
       where: { username: ghUser.login },
       update: {
         publicRepos: ghUser.public_repos ?? 0,
+        totalStars,
+        totalForks,
         totalCommits,
         totalPrs,
         topLanguage,
@@ -150,6 +160,8 @@ export async function searchUser(username: string): Promise<{ login: string }> {
         elo: 0,
         placementCompleted: false,
         publicRepos: ghUser.public_repos ?? 0,
+        totalStars,
+        totalForks,
         totalCommits,
         totalPrs,
         topLanguage,
