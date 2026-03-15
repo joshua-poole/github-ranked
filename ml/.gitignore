@@ -1,11 +1,3 @@
-# Project specific
-src/data/*
-!src/data/.gitkeep
-
-src/artefacts/*
-!src/artefacts/latest.pkl
-!src/artefacts/.gitkeep
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
