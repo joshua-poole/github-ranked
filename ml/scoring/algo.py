@@ -13,11 +13,12 @@ class ELO:
         self.TZ_OFFSET_MIN = 0
 
         self.WEIGHTS = {
-            "loc": 0.35,  # Lines of change (biggest impact)
-            "time": 0.15,  # Time of day (business hours)
-            "day": 0.10,  # Weekday vs weekend
-            "message": 0.30,  # Commit message quality (ML-powered)
-            "consistency": 0.10,  # Consistent pacing
+            "loc": 0.25,
+            "time": 0.10,
+            "day": 0.05,
+            "message": 0.20,
+            "consistency": 0.15,
+            "frequency": 0.25,
         }
 
     def calculate(self, commits: List[CommitData]) -> Result:
@@ -32,15 +33,27 @@ class ELO:
 
         recent.sort(key=lambda c: c["timestamp"])
 
-        # Calculate consistency score from burstiness (inverse)
+        if not recent:
+            return {
+                "eloDelta": 0,
+                "breakdown": {
+                    "lateNightContribution": 0,
+                    "burstContribution": 0,
+                    "messageQualityDeduction": 0,
+                    "frequencyContribution": 0,
+                    "consistencyContribution": 0,
+                },
+            }
+
+        # Calculate once, outside loop
         burstiness = self._simple_burstiness(recent)
-        consistency = 1.0 - burstiness
 
         total = 0.0
         weight_sum = 0.0
-        avg_msg_score = 0.0
         avg_time_score = 0.0
-        total_stress = 0.0
+        total_msg_score = 0.0
+        total_frequency = 0.0
+        total_combined_consistency = 0.0
 
         for c in recent:
             age_days = (now - c["timestamp"]).total_seconds() / 86400
@@ -49,12 +62,20 @@ class ELO:
             loc_score = self._loc_score(c)
             time_score = self._time_score(c)
             day_score = self._day_score(c)
-            msg_score = 1.0 - c["stressLevel"]  # Based on ML sentiment
 
-            # Track for breakdown
+            # ML signals from each commit
+            msg_score = c.get("commit_score", 0.5)
+            frequency = c.get("commit_frequency", 0.0)
+            ml_consistency = c.get("commit_consistency", 0.5)
+
+            # Track for averages
             avg_time_score += time_score
-            avg_msg_score += msg_score
-            total_stress += c["stressLevel"]
+            total_msg_score += msg_score
+            total_frequency += frequency
+
+            # Combine consistency signals
+            combined_consistency = (ml_consistency + (1.0 - burstiness)) / 2
+            total_combined_consistency += combined_consistency
 
             # Weighted combination
             combined = (
@@ -62,33 +83,29 @@ class ELO:
                 + self.WEIGHTS["time"] * time_score
                 + self.WEIGHTS["day"] * day_score
                 + self.WEIGHTS["message"] * msg_score
-                + self.WEIGHTS["consistency"] * consistency
+                + self.WEIGHTS["consistency"] * combined_consistency
+                + self.WEIGHTS["frequency"] * frequency
             )
 
-            # Scale to 0-5000 range
-            spike = combined * 100
-
+            spike = combined * 30
             total += spike * w
             weight_sum += w
 
         # Calculate averages
         commit_count = len(recent)
-        if commit_count > 0:
-            avg_time_score /= commit_count
-            avg_msg_score /= commit_count
-            avg_stress = total_stress / commit_count
-        else:
-            avg_time_score = 0.5
-            avg_msg_score = 0.5
-            avg_stress = 0.5
+        avg_time_score /= commit_count
+        avg_msg_score = total_msg_score / commit_count
+        avg_frequency = total_frequency / commit_count
+        avg_combined_consistency = total_combined_consistency / commit_count
 
-        level = int(min(5000, max(0, round(total))))
+        level = int(round(total))
 
         breakdown: Breakdown = {
-            "stressContribution": round(avg_stress * 100),
             "lateNightContribution": round((1 - avg_time_score) * 100),
             "burstContribution": round(burstiness * 100),
             "messageQualityDeduction": round((1 - avg_msg_score) * 100),
+            "frequencyContribution": round(avg_frequency * 100),
+            "consistencyContribution": round(avg_combined_consistency * 100),
         }
 
         result: Result = {
@@ -145,7 +162,3 @@ class ELO:
         adjusted = c["timestamp"] + timedelta(minutes=self.TZ_OFFSET_MIN)
         weekday = adjusted.weekday()
         return (weekday + 1) % 7
-
-    def _lerp(self, a: float, b: float, t: float) -> float:
-        clamped = max(0.0, min(1.0, t))
-        return a + (b - a) * clamped
