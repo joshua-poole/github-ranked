@@ -6,6 +6,7 @@ interface RepoStats {
 }
 
 interface ProfileStats {
+  username: string
   followers: number
   following: number
   publicRepos: number
@@ -16,7 +17,10 @@ interface ProfileStats {
   website: string | null
 }
 
-export interface UserStats extends ProfileStats, RepoStats {}
+interface CommitStats {
+  totalCommits: number
+}
+export interface UserStats extends ProfileStats, RepoStats, CommitStats {}
 
 const headers = {
   Accept: 'application/vnd.github+json',
@@ -33,6 +37,7 @@ async function fetchProfileStats(username: string): Promise<ProfileStats> {
   if (!res.ok) throw new Error(`Failed to fetch profile: ${res.status}`)
   const data = await res.json()
   return {
+    username: username,
     followers: data.followers,
     following: data.following,
     publicRepos: data.public_repos,
@@ -90,10 +95,29 @@ async function fetchRepoStats(username: string): Promise<RepoStats> {
   }
 }
 
+async function fetchCommitStats(username: string): Promise<CommitStats> {
+  const res = await fetch(
+    `https://api.github.com/search/commits?q=author:${username}`,
+    {
+      headers: {
+        ...headers,
+        Accept: 'application/vnd.github.cloak-preview+json',
+      },
+    },
+  )
+  if (!res.ok) throw new Error(`Failed to fetch commits: ${res.status}`)
+  const data = await res.json()
+  return {
+    totalCommits: data.total_count,
+  }
+}
+
+
 export async function getUserStats(username: string): Promise<UserStats> {
-  const [profile, repos] = await Promise.all([
+  const [profile, repos, commits] = await Promise.all([
     fetchProfileStats(username),
     fetchRepoStats(username),
+    fetchCommitStats(username),
   ])
-  return { ...profile, ...repos }
+  return { ...profile, ...repos, ...commits}
 }
