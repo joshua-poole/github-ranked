@@ -12,7 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RankIndexRouteImport } from './routes/rank/index'
 import { Route as LeaderboardIndexRouteImport } from './routes/leaderboard/index'
-import { Route as DuelIndexRouteImport } from './routes/duel/index'
+import { Route as CompareIndexRouteImport } from './routes/compare/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as DashboardUsernameRouteImport } from './routes/dashboard/$username'
 import { Route as ApiTrpcSplatRouteImport } from './routes/api.trpc.$'
@@ -32,9 +32,9 @@ const LeaderboardIndexRoute = LeaderboardIndexRouteImport.update({
   path: '/leaderboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DuelIndexRoute = DuelIndexRouteImport.update({
-  id: '/duel/',
-  path: '/duel/',
+const CompareIndexRoute = CompareIndexRouteImport.update({
+  id: '/compare/',
+  path: '/compare/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutIndexRoute = AboutIndexRouteImport.update({
@@ -57,7 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard/$username': typeof DashboardUsernameRoute
   '/about/': typeof AboutIndexRoute
-  '/duel/': typeof DuelIndexRoute
+  '/compare/': typeof CompareIndexRoute
   '/leaderboard/': typeof LeaderboardIndexRoute
   '/rank/': typeof RankIndexRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
@@ -66,7 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard/$username': typeof DashboardUsernameRoute
   '/about': typeof AboutIndexRoute
-  '/duel': typeof DuelIndexRoute
+  '/compare': typeof CompareIndexRoute
   '/leaderboard': typeof LeaderboardIndexRoute
   '/rank': typeof RankIndexRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
@@ -76,7 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard/$username': typeof DashboardUsernameRoute
   '/about/': typeof AboutIndexRoute
-  '/duel/': typeof DuelIndexRoute
+  '/compare/': typeof CompareIndexRoute
   '/leaderboard/': typeof LeaderboardIndexRoute
   '/rank/': typeof RankIndexRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
@@ -87,7 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard/$username'
     | '/about/'
-    | '/duel/'
+    | '/compare/'
     | '/leaderboard/'
     | '/rank/'
     | '/api/trpc/$'
@@ -96,7 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard/$username'
     | '/about'
-    | '/duel'
+    | '/compare'
     | '/leaderboard'
     | '/rank'
     | '/api/trpc/$'
@@ -105,7 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard/$username'
     | '/about/'
-    | '/duel/'
+    | '/compare/'
     | '/leaderboard/'
     | '/rank/'
     | '/api/trpc/$'
@@ -115,7 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardUsernameRoute: typeof DashboardUsernameRoute
   AboutIndexRoute: typeof AboutIndexRoute
-  DuelIndexRoute: typeof DuelIndexRoute
+  CompareIndexRoute: typeof CompareIndexRoute
   LeaderboardIndexRoute: typeof LeaderboardIndexRoute
   RankIndexRoute: typeof RankIndexRoute
   ApiTrpcSplatRoute: typeof ApiTrpcSplatRoute
@@ -144,11 +144,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/duel/': {
-      id: '/duel/'
-      path: '/duel'
-      fullPath: '/duel/'
-      preLoaderRoute: typeof DuelIndexRouteImport
+    '/compare/': {
+      id: '/compare/'
+      path: '/compare'
+      fullPath: '/compare/'
+      preLoaderRoute: typeof CompareIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about/': {
@@ -179,7 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardUsernameRoute: DashboardUsernameRoute,
   AboutIndexRoute: AboutIndexRoute,
-  DuelIndexRoute: DuelIndexRoute,
+  CompareIndexRoute: CompareIndexRoute,
   LeaderboardIndexRoute: LeaderboardIndexRoute,
   RankIndexRoute: RankIndexRoute,
   ApiTrpcSplatRoute: ApiTrpcSplatRoute,
