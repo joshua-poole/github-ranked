@@ -12,6 +12,7 @@ function RouteComponent() {
   const [showCompare, setShowCompare] = useState(false)
   const [user1, setUser1] = useState('')
   const [user2, setUser2] = useState('')
+  const [trigger, setTrigger] = useState(0)
 
   return (
     <main className="flex flex-col items-center gap-4 page-wrap py-12">
@@ -21,8 +22,15 @@ function RouteComponent() {
         vs
         <Input onChange={(e) => setUser2(e.target.value)} />
       </div>
-      <Button onClick={() => setShowCompare(true)}>Compare</Button>
-      {showCompare && <Compare user1={user1} user2={user2} />}
+      <Button
+        onClick={() => {
+          setShowCompare(true)
+          setTrigger((t) => t + 1)
+        }}
+      >
+        Compare
+      </Button>
+      {showCompare && <Compare user1={user1} user2={user2} trigger={trigger} />}
     </main>
   )
 }

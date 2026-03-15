@@ -40,22 +40,25 @@ async function fetchUser(username: string) {
 export default function Compare({
   user1,
   user2,
+  trigger,
 }: {
   user1: string
   user2: string
+  trigger: number
 }) {
   const [users, setUsers] = useState<any[]>([])
 
   useEffect(() => {
     if (!user1 || !user2) return
     Promise.all([fetchUser(user1), fetchUser(user2)]).then(setUsers)
-  }, [user1, user2])
-  console.log(users)
+  }, [trigger])
+
   return (
     <main className="flex flex-row gap-2">
       {users.map((user) => (
         <Card key={user.name} className="w-96">
           <CardHeader>
+            <img src={user.avatar} className="w-12 h-12 rounded-full mb-2" />
             <CardTitle className="text-2xl">{user.name}</CardTitle>
             <CardDescription className="text-primary">
               #{user.rank} - {user.rr} RR{' '}
