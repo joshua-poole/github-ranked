@@ -1,21 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTRPC } from '#/integrations/trpc/react'
 import type { Rank } from '#/server/services/dashboard/getUserRank'
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
+import { Card, CardContent } from './ui/card'
 
 interface UserRankProps {
   username: string
-}
-
-const RANK_LABELS: Record<Rank, string> = {
-  UNRANKED: 'Unranked',
-  PLASTIC: 'Plastic',
-  BRONZE: 'Bronze',
-  SILVER: 'Silver',
-  GOLD: 'Gold',
-  PLATINUM: 'Platinum',
-  DIAMOND: 'Diamond',
-  LINUS: 'Linus',
 }
 
 const RANK_IMAGE: Record<string, string> = {
@@ -42,14 +31,66 @@ const RANK_IMAGE: Record<string, string> = {
 }
 
 const RANK_COLORS: Record<Rank, string> = {
-  UNRANKED: '#9ca3af', // gray
-  PLASTIC: '#e5e7eb', // light gray
-  BRONZE: '#cd7f32', // bronze
-  SILVER: '#c0c0c0', // silver
-  GOLD: '#ffd700', // gold
-  PLATINUM: '#e5e4e2', // platinum
-  DIAMOND: '#b9f2ff', // diamond blue
-  LINUS: '#f97316', // orange
+  UNRANKED: '#9ca3af',
+  PLASTIC: '#e5e7eb',
+  BRONZE: '#cd7f32',
+  SILVER: '#c0c0c0',
+  GOLD: '#ffd700',
+  PLATINUM: '#e5e4e2',
+  DIAMOND: '#b9f2ff',
+  LINUS: '#f97316',
+}
+
+// Ordered rank tiers, each spanning 1000 elo (0–999, 1000–1999, etc.)
+const RANK_TIERS = [
+  'PLASTIC',
+  'BRONZE',
+  'SILVER',
+  'GOLD',
+  'PLATINUM',
+  'DIAMOND',
+  'LINUS',
+]
+
+const SUBRANK_SUFFIXES = ['_III', '_II', '_I'] as const
+
+/**
+ * Maps an elo value to:
+ *   - imageKey: key into RANK_IMAGE (e.g. "GOLD_II")
+ *   - label:    display label       (e.g. "Gold II")
+ *   - rank:     the base rank tier  (e.g. "GOLD")
+ *
+ * Elo layout:
+ *   0–999    → PLASTIC  (0–332 = III, 333–665 = II, 666–999 = I)
+ *   1000–1999 → BRONZE
+ *   ...
+ *   5000–5999 → DIAMOND
+ *   6000–6999 → LINUS   (no subranks)
+ */
+function eloToRankInfo(elo: number): {
+  imageKey: string
+  label: string
+  rank: Rank
+} {
+  const tierIndex = Math.min(Math.floor(elo / 1000), RANK_TIERS.length - 1)
+  const rank = RANK_TIERS[tierIndex] as Rank
+
+  // LINUS has no subranks
+  if (rank === 'LINUS') {
+    return { imageKey: 'LINUS', label: 'Linus', rank }
+  }
+
+  const eloWithinTier = elo % 1000
+  // 0–332 = subrank index 0 (III), 333–665 = 1 (II), 666–999 = 2 (I)
+  const subIndex = Math.min(Math.floor(eloWithinTier / 333), 2)
+  const suffix = SUBRANK_SUFFIXES[subIndex] // '_III' | '_II' | '_I'
+  const imageKey = `${rank}${suffix}`
+
+  const subLabel = suffix.replace('_', '') // 'III' | 'II' | 'I'
+  const tierLabel = rank.charAt(0) + rank.slice(1).toLowerCase()
+  const label = `${tierLabel} ${subLabel}`
+
+  return { imageKey, label, rank }
 }
 
 export function UserRank({ username }: UserRankProps) {
@@ -70,35 +111,37 @@ export function UserRank({ username }: UserRankProps) {
   if (!data) return null
 
   const rank = data.rank as Rank
-  const elo = 1200
+  const elo = data.elo
 
-  // return (
-  //   <div className="flex items-center gap-3">
-  //     <img
-  //       src={RANK_IMAGE[rank]}
-  //       alt={RANK_LABELS[rank]}
-  //       className="w-20 h-20 object-contain"
-  //     />
-  //     <div className="flex flex-col">
-  //       <p className="text-xs text-primary uppercase tracking-wide font-medium">
-  //         Rank
-  //       </p>
-  //       <p className="text-2xl font-bold" style={{ color: RANK_COLORS[rank] }}>
-  //         {RANK_LABELS[rank]}
-  //       </p>
-  //     </div>
-  //   </div>
-  // )
+  const isUnranked = rank === 'UNRANKED'
+  const { imageKey, label } = isUnranked
+    ? { imageKey: 'UNRANKED', label: 'Unranked' }
+    : eloToRankInfo(elo)
 
   return (
-    <Card className="w-75">
-      <CardContent className="flex flex-row w-full justify-between">
+    <Card className="w-full sm:w-75">
+      <CardContent className="flex flex-row w-full justify-between items-center">
         <div className="flex flex-col">
-          <p>{RANK_LABELS[rank]}</p>
-          <p>Elo: 1000</p>
+          <p className="text-xs text-primary uppercase tracking-wide font-medium">
+            Rank
+          </p>
+          <p
+            className="text-2xl font-bold"
+            style={{ color: RANK_COLORS[rank] }}
+          >
+            {label}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {label === 'Unranked'
+              ? 'You need 10 commits to get ranked'
+              : `Elo: ${elo}`}
+          </p>
         </div>
-        <img>
-        </img>
+        <img
+          src={RANK_IMAGE[imageKey]}
+          alt={label}
+          className="w-20 h-20 object-contain"
+        />
       </CardContent>
     </Card>
   )

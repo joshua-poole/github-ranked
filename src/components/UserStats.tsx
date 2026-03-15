@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTRPC } from '#/integrations/trpc/react'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
+import { BookMarked, Code2, GitFork, LucideInfo, Star } from 'lucide-react'
 
 interface UserStatsProps {
   username: string
@@ -21,16 +22,26 @@ export interface UserStats {
   mostStarredRepo: { name: string; stars: number } | null
 }
 
-function StatCard({ label, value }: { label: string; value: string | number }) {
+interface StatCardProps {
+  label: string
+  value: string | number
+  icon: React.ReactNode
+  meta?: { label: string; value: string | number }[]
+}
+
+function StatCard({ label, value, icon, meta }: StatCardProps) {
   return (
-    <Card className="border-(--line)">
-      <CardHeader className="pb-1 pt-3 px-4">
-        <CardTitle className="text-xs font-medium uppercase tracking-wide">
-          {label}
-        </CardTitle>
+    <Card className="flex flex-col gap-2 min-w-0">
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <div className="text-primary">{icon}</div>
+          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            {label}
+          </span>
+        </div>
       </CardHeader>
-      <CardContent className="px-4 pb-3">
-        <span className="text-xl font-bold">{value}</span>
+      <CardContent>
+        <span className="text-lg font-semibold tracking-tight">{value}</span>
       </CardContent>
     </Card>
   )
@@ -47,18 +58,17 @@ export function UserStats({ username }: UserStatsProps) {
   if (!data) return null
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <StatCard label="Public Repos" value={data.publicRepos} />
-        <StatCard label="Total Stars" value={data.totalStars} />
-        <StatCard label="Total Forks" value={data.totalForks} />
-        <StatCard label="Top Language" value={data.topLanguage ?? 'N/A'} />
-      </div>
-
-      {(data.location || data.company || data.website) && (
-        <Card className="border-[var(--line)]]">
+    <div className="space-y-4 w-full md:w-1/2">
+      {(data.location ||
+        data.company ||
+        data.website ||
+        data.accountCreatedAt) && (
+        <Card className="border-[var(--line)]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">About</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              <LucideInfo className="text-primary" size={18} />
+              About
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
@@ -75,7 +85,7 @@ export function UserStats({ username }: UserStatsProps) {
                   href={data.website}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[var(--lagoon-deep)] hover:underline"
+                  className="text-(--lagoon-deep) hover:underline"
                 >
                   🔗 {data.website}
                 </a>
@@ -84,6 +94,29 @@ export function UserStats({ username }: UserStatsProps) {
           </CardContent>
         </Card>
       )}
+
+      <div className="grid grid-cols-2 sm:grid-cols-2 gap-3">
+        <StatCard
+          label="Public Repos"
+          value={data.publicRepos}
+          icon={<BookMarked size={18} />}
+        />
+        <StatCard
+          label="Total Stars"
+          value={data.totalStars}
+          icon={<Star size={18} />}
+        />
+        <StatCard
+          label="Total Forks"
+          value={data.totalForks}
+          icon={<GitFork size={18} />}
+        />
+        <StatCard
+          label="Top Language"
+          value={data.topLanguage ?? 'N/A'}
+          icon={<Code2 size={18} />}
+        />
+      </div>
     </div>
   )
 }

@@ -12,8 +12,8 @@ export const Route = createFileRoute('/dashboard/$username')({
 export function DashboardPage() {
   const { username } = useParams({ from: '/dashboard/$username' })
   return (
-    <div className="p-20">
-      <div className='flex flex-row justify-between items-center w-full'>
+    <div className="p-10 sm:p-20">
+      <div className="flex flex-col justify-center gap-4 sm:flex-row sm:justify-between items-center w-full">
         <div className="flex items-center gap-4">
           <UserIcon username={username} size={72} />
           <div>
@@ -31,10 +31,11 @@ export function DashboardPage() {
         <UserRank username={username} />
       </div>
 
-      {/* <Separator />
-      <UserStats username={username} />
       <Separator />
-      <ContributionGraph username={username} /> */}
+      <div className='flex flex-col md:flex-row gap-2.5 pt-5'>
+        <UserStats username={username} />
+        <ContributionGraph username={username} />
+      </div>
     </div>
   )
 }
