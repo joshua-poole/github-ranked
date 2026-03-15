@@ -141,7 +141,9 @@ async function getRepoCommits(
         message: node.message,
         additions: node.additions,
         deletions: node.deletions,
-        stressLevel: 0,
+        commit_score: 0,
+        commit_frequency: 0,
+        commit_consistency: 0,
       })
     }
 
