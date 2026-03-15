@@ -1,0 +1,7 @@
+artefacts/*
+!artefacts/.gitkeep
+!artefacts/transformer
+!artefacts/regression.pkl
+
+data/*
+!data/.gitkeep
