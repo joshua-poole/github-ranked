@@ -1,8 +1,10 @@
+import { CommitCloud } from '#/components/CommitCloud'
 import { ContributionGraph } from '#/components/ContributionGraph'
 import { Separator } from '#/components/ui/separator'
 import { UserIcon } from '#/components/UserIcon'
 import { UserRank } from '#/components/UserRank'
 import { UserStats } from '#/components/UserStats'
+import { UserTags } from '#/components/UserTags'
 import { createFileRoute, useParams } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/dashboard/$username')({
@@ -32,9 +34,13 @@ export function DashboardPage() {
       </div>
 
       <Separator />
-      <div className='flex flex-col md:flex-row gap-2.5 pt-5'>
+      <div className="flex flex-col md:flex-row gap-2.5 pt-5">
         <UserStats username={username} />
         <ContributionGraph username={username} />
+      </div>
+      <div className="flex flex-col md:flex-row gap-2.5 pt-5">
+        <UserTags username={username} />
+        <CommitCloud username={username} />
       </div>
     </div>
   )

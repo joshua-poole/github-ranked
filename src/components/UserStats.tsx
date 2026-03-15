@@ -102,13 +102,13 @@ export function UserStats({ username }: UserStatsProps) {
           icon={<BookMarked size={18} />}
         />
         <StatCard
-          label="Total Stars"
-          value={data.totalStars}
+          label="Total Commits"
+          value={data.totalCommits}
           icon={<Star size={18} />}
         />
         <StatCard
-          label="Total Forks"
-          value={data.totalForks}
+          label="Total PRs"
+          value={data.totalPrs}
           icon={<GitFork size={18} />}
         />
         <StatCard
