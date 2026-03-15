@@ -47,22 +47,40 @@ db/
   init.sql         # Database init script
 ```
 
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) and [pnpm](https://pnpm.io/)
+- [Docker](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/getting-started/installation)
+- [uv](https://docs.astral.sh/uv/) (for the Python scoring service)
+
 ## Getting Started
 
 ```bash
 # Install dependencies
 pnpm install
 
+# Start a local Postgres database (requires Docker/Podman)
+./start-database.sh
+
+# Run migrations and seed
+pnpm db:migrate
+pnpm db:seed
+
 # Run the dev server (port 3000)
 pnpm dev
-
-# Database commands
-pnpm db:migrate    # Run migrations
-pnpm db:seed       # Seed the database
-pnpm db:studio     # Open Prisma Studio
 ```
 
-The Neon Vite plugin will auto-create a claimable dev database if one isn't configured. Claimable databases expire in 72 hours.
+The `start-database.sh` script reads `DATABASE_URL` from your `.env` file, spins up a Postgres container, and will prompt to generate a random password if you're using the default. On Windows, run the script from WSL.
+
+Alternatively, the Neon Vite plugin will auto-create a claimable dev database if one isn't configured (expires in 72 hours).
+
+### Other Database Commands
+
+```bash
+pnpm db:studio     # Open Prisma Studio
+pnpm db:push       # Push schema without migrations
+pnpm db:generate   # Regenerate Prisma client
+```
 
 ## Python Scoring Service
 
