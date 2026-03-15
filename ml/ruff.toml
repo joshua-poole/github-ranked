@@ -1,5 +1,4 @@
 line-length = 88
-include = ["src/v0_7/**/*.py"]
 
 [lint]
 select = [

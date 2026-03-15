@@ -30,6 +30,8 @@ model User {
   elo                BigInt
   placementCompleted Boolean
   publicRepos        Int           @default(0)
+  totalStars         Int           @default(0)
+  totalForks         Int           @default(0)
   totalCommits       Int           @default(0)
   totalPrs           Int           @default(0)
   topLanguage        String?
