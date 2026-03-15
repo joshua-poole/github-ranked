@@ -1,0 +1,6 @@
+src/data/*
+!src/data/.gitkeep
+
+src/artefacts/*
+!src/artefacts/latest.pkl
+!src/artefacts/.gitkeep

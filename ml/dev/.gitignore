@@ -1,0 +1,5 @@
+artefacts/*
+!artefacts/.gitkeep
+
+data/*
+!data/.gitkeep
