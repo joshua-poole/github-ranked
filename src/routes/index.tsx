@@ -18,7 +18,7 @@ function App() {
           modern developer.
         </p>
       </div>
-      <div className="flex flex-col w-full min-h-[70vh] items-center justify-center gap-5">
+      <div className="flex flex-col w-full min-h-x`[70vh] items-center justify-center gap-5">
         <Card className="w-full sm:max-w-3/4 md:max-w-1/2">
           <CardContent>
             <SearchUser />
