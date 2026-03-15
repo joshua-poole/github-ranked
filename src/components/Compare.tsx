@@ -12,27 +12,25 @@ import { useQuery } from '@tanstack/react-query'
 export default function Compare({
   user1,
   user2,
-  trigger,
 }: {
   user1: string
   user2: string
-  trigger: number
 }) {
   const trpc = useTRPC()
 
-  const { data, isLoading, error } = useQuery({
+  const { data } = useQuery({
     ...trpc.user.compareUsers.queryOptions({
       username1: user1,
       username2: user2,
     }),
-    enabled: trigger > 0 && !!user1 && !!user2,
+    networkMode: 'always',
+    enabled: !!user1 && !!user2,
   })
 
-  console.log({ data, isLoading, error })
   if (!data) return null
 
   const users = [data.user1, data.user2]
-  console.log(users)
+
   return (
     <main className="flex flex-row gap-2">
       {users.map((user) => (
@@ -40,9 +38,6 @@ export default function Compare({
           <CardHeader>
             <img src={user.icon} className="w-12 h-12 rounded-full mb-2" />
             <CardTitle className="text-2xl">{user.username}</CardTitle>
-            <CardDescription className="text-primary">
-              #{user.rank} - RR{' '}
-            </CardDescription>
           </CardHeader>
           <CardContent className="text-base">
             <div className="flex justify-between items-center py-1">

@@ -11,25 +11,18 @@ export const Route = createFileRoute('/compare/')({
 function RouteComponent() {
   const [user1, setUser1] = useState('')
   const [user2, setUser2] = useState('')
-  const [trigger, setTrigger] = useState(0)
+  const [submitted, setSubmitted] = useState({ user1: '', user2: '' })
 
   return (
     <main className="flex flex-col items-center gap-4 page-wrap py-12">
-      <h1>Side-by-Side Comparison of two users </h1>
-      <div className="flex flex-row gap-4 ">
+      <h1>Side-by-Side Comparison of two users</h1>
+      <div className="flex flex-row gap-4">
         <Input onChange={(e) => setUser1(e.target.value)} />
         vs
         <Input onChange={(e) => setUser2(e.target.value)} />
       </div>
-      <Button
-        onClick={() => {
-          console.log('clicked', { user1, user2, trigger })
-          setTrigger((t) => t + 1)
-        }}
-      >
-        Compare
-      </Button>
-      <Compare user1={user1} user2={user2} trigger={trigger} />
+      <Button onClick={() => setSubmitted({ user1, user2 })}>Compare</Button>
+      <Compare user1={submitted.user1} user2={submitted.user2} />
     </main>
   )
 }
