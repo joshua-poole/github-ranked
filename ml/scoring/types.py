@@ -9,14 +9,17 @@ class CommitData(TypedDict):
     message: str  # Commit message
     additions: int  # Lines added
     deletions: int  # Lines deleted
-    stressLevel: float  # 0 chill, 1 stressed (from ML)
+    commit_score: float  # ML
+    commit_frequency: float  # ML
+    commit_consistency: float  # ML
 
 
 class Breakdown(TypedDict):
-    stressContribution: int
     lateNightContribution: int
     burstContribution: int
     messageQualityDeduction: int
+    frequencyContribution: int
+    consistencyContribution: int
 
 
 class Result(TypedDict):
